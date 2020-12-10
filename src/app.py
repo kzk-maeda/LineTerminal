@@ -15,6 +15,8 @@ from linebot.models import (
   MessageEvent, PostbackEvent, TextMessage, TextSendMessage, FlexSendMessage
 )
 
+from views.serverSelecter import ServerSelecter
+
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
@@ -54,9 +56,18 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    contents = ''
-    # message = FlexSendMessage(alt_text="hello", contents=contents)
-    message = TextSendMessage(text=event.message.text)
+    app.logger.info("Handle Message")
+
+    server_list = [
+        {'name': 'ServerA', 'local_ip': '10.0.0.1'},
+        {'name': 'ServerB', 'local_ip': '10.0.0.2'},
+        {'name': 'ServerC', 'local_ip': '10.0.0.3'}
+    ]
+
+    serverSelecter = ServerSelecter()
+    contents = serverSelecter.createCarousel(server_list)
+    message = FlexSendMessage(alt_text="hello", contents=contents)
+    # message = TextSendMessage(text=event.message.text)
 
     line_bot_api.reply_message(
         event.reply_token,
