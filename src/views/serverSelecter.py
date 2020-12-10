@@ -7,7 +7,7 @@ class ServerSelecter():
     def createCarousel(self, server_list):
         bubble_list = []
         for server in server_list:
-            bubble_list.append(self.createBubble(server.get('name'), server.get('local_ip')))
+            bubble_list.append(self.createBubble(server.get('name'), server.get('os_name')))
 
         carousel = {
             "type": "carousel",
@@ -17,7 +17,7 @@ class ServerSelecter():
         return carousel
     
 
-    def createBubble(self, server_name, local_ip):
+    def createBubble(self, server_name, os_name):
         bubble = {
             "type": "bubble",
             "size": "micro",
@@ -52,7 +52,7 @@ class ServerSelecter():
                                 "color": "#8C8C8C",
                                 "size": "sm",
                                 "wrap": True,
-                                "text": local_ip
+                                "text": os_name
                             }
                         ],
                         "flex": 1
@@ -64,7 +64,7 @@ class ServerSelecter():
             "action": {
                 "type": "postback",
                 "label": "action",
-                "data": local_ip,
+                "data": f"action=connect&target={server_name}",
                 "displayText": f"Connect to {server_name}"
             },
             "styles": {

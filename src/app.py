@@ -16,6 +16,7 @@ from linebot.models import (
 )
 
 from views.serverSelecter import ServerSelecter
+from views.terminal import Terminal
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -55,13 +56,15 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-
     app.logger.info("Handle Message")
 
+    # TODO: branch by sent command
+    # whether connect to server or execute remote command
+
     server_list = [
-        {'name': 'ServerA', 'local_ip': '10.0.0.1'},
-        {'name': 'ServerB', 'local_ip': '10.0.0.2'},
-        {'name': 'ServerC', 'local_ip': '10.0.0.3'}
+        {'name': 'ServerA', 'os_name': 'centos7'},
+        {'name': 'ServerB', 'os_name': 'ubuntu1804'},
+        {'name': 'ServerC', 'os_name': 'ubuntu1604'}
     ]
 
     serverSelecter = ServerSelecter()
@@ -73,6 +76,29 @@ def handle_message(event):
         event.reply_token,
         message
     )
+
+
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    app.logger.info('Postback Event')
+
+    # TODO: Connect to remote host
+
+    terminal = Terminal()
+    response_content = terminal.createTerminalResponse('ServerA', '/usr/local')
+
+    send_line_api(event, response_content)
+
+
+def send_line_api(event, contents, alt_text="text"):
+    message = FlexSendMessage(alt_text=alt_text, contents=contents)
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        message
+    )
+
+    return 'OK'
 
 
 if __name__ == "__main__":

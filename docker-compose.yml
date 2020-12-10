@@ -1,8 +1,31 @@
 version: '3'
 services:
-  app:
-    build: .
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_gateway
+    container_name: gateway
+    volumes:
+      - ./src/:/app
+    privileged: true
+    networks:
+      - local
     ports:
       - 5000:5000
     env_file:
       - .env
+    command: /app/entrypoint.sh
+  
+  centos7:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_centos7
+    container_name: centos7
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+
+networks:
+  local:
+    external: true
