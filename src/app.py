@@ -29,41 +29,39 @@ handler = WebhookHandler(SECRET)
 
 @app.route('/health')
 def health_check():
-    logging.info('health check')
+    app.logger.info('Health Check : OK')
     return 'OK'
 
 
 @app.route("/callback", methods=['POST'])
 def callback():
-  # get X-Line-Signature header value
-  signature = request.headers['X-Line-Signature']
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
 
-  # get request body as text
-  body = request.get_data(as_text=True)
-  # app.logger.info("Request_body : " + body)
-  print("Request_body : " + body)
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request_body : " + body)
 
-  # handle webhook body
-  try:
-    handler.handle(body, signature)
-  except InvalidSignatureError:
-    abort(400)
-  
-  return 'OK'
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    return 'OK'
 
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-  contents = ''
-  
-  message = FlexSendMessage(alt_text="hello", contents=contents)
+    contents = ''
+    # message = FlexSendMessage(alt_text="hello", contents=contents)
+    message = TextSendMessage(text=event.message.text)
 
-  line_bot_api.reply_message(
-    event.reply_token,
-    message
-  )
-
+    line_bot_api.reply_message(
+        event.reply_token,
+        message
+    )
 
 
 if __name__ == "__main__":

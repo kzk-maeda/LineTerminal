@@ -1,5 +1,8 @@
 FROM python:3.8
 
+# ENV LINE_ACCESS_TOKEN=XXX
+# ENV LINE_SECRET=XXX
+
 RUN mkdir /app
 WORKDIR /app
 
