@@ -2,7 +2,7 @@ class Terminal():
     def __init__(self):
         pass
 
-    def createTerminalResponse(self, server_name, current_dir):
+    def createTerminalResponse(self, server_name, current_dir, std_out):
         res = {
             "type": "bubble",
             "size": "giga",
@@ -16,17 +16,9 @@ class Terminal():
                     "contents": [
                     {
                         "type": "text",
-                        "text": "Server",
-                        "color": "#ffffff66",
-                        "size": "sm"
-                    },
-                    {
-                        "type": "text",
                         "text": server_name,
-                        "color": "#ffffff",
-                        "size": "xl",
-                        "flex": 4,
-                        "weight": "bold"
+                        "color": "#ffffff99",
+                        "size": "sm"
                     }
                     ]
                 },
@@ -37,16 +29,8 @@ class Terminal():
                     {
                         "type": "text",
                         "text": current_dir,
-                        "color": "#ffffff66",
+                        "color": "#ffffff99",
                         "size": "sm"
-                    },
-                    {
-                        "type": "text",
-                        "text": "/usr/local/",
-                        "color": "#ffffff",
-                        "size": "xl",
-                        "flex": 4,
-                        "weight": "bold"
                     }
                     ]
                 }
@@ -54,7 +38,7 @@ class Terminal():
                 "paddingAll": "20px",
                 "backgroundColor": "#27ACB2",
                 "spacing": "md",
-                "height": "154px",
+                "height": "90px",
                 "paddingTop": "22px"
             },
             "body": {
@@ -63,32 +47,12 @@ class Terminal():
                 "contents": [
                 {
                     "type": "text",
-                    "text": "yyyy:mm:dd hh:ss",
-                    "color": "#b7b7b7",
+                    "text": std_out,
+                    "wrap": True,
+                    "color": "#000000",
                     "size": "xs"
-                },
-                {
-                    "type": "box",
-                    "layout": "horizontal",
-                    "contents": [
-                    {
-                        "type": "text",
-                        "text": "hostname",
-                        "size": "sm",
-                        "gravity": "center"
-                    }
-                    ],
-                    "spacing": "lg",
-                    "cornerRadius": "30px",
-                    "margin": "xl"
                 }
                 ]
-            },
-            "action": {
-                "type": "postback",
-                "label": "action",
-                "data": "postback_data",
-                "displayText": "display_text"
             }
         }
 

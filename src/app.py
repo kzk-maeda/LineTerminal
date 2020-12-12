@@ -17,6 +17,7 @@ from linebot.models import (
 
 from views.serverSelecter import ServerSelecter
 from views.terminal import Terminal
+from ssh import SSH
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -58,8 +59,23 @@ def callback():
 def handle_message(event):
     app.logger.info("Handle Message")
 
+    is_connected = True
+
     # TODO: branch by sent command
     # whether connect to server or execute remote command
+    if is_connected:
+        ssh = SSH(
+            host='centos7',
+            port=22,
+            user='root',
+            password='password'
+        )
+        std_out = ssh.exec_command(event.message.text)
+        app.logger.info(f'STD_OUT : {std_out}')
+        terminal = Terminal()
+        response_content = terminal.createTerminalResponse('ServerA', '/usr/local', std_out)
+        send_line_api(event, response_content)
+
 
     server_list = [
         {'name': 'ServerA', 'os_name': 'centos7'},
@@ -85,7 +101,7 @@ def handle_postback(event):
     # TODO: Connect to remote host
 
     terminal = Terminal()
-    response_content = terminal.createTerminalResponse('ServerA', '/usr/local')
+    response_content = terminal.createTerminalResponse('ServerA', '/usr/local', 'welcome')
 
     send_line_api(event, response_content)
 

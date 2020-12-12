@@ -130,3 +130,6 @@ dmypy.json
 
 # memo
 /*memo.md
+
+# DynamoDB
+/persist
