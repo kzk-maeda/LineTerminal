@@ -7,7 +7,7 @@ class ServerSelecter():
     def createCarousel(self, server_list):
         bubble_list = []
         for server in server_list:
-            bubble_list.append(self.createBubble(server.get('name'), server.get('os_name')))
+            bubble_list.append(self.createBubble(server.get('name'), server.get('hostname')))
 
         carousel = {
             "type": "carousel",

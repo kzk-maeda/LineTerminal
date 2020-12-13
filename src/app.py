@@ -17,7 +17,9 @@ from linebot.models import (
 
 from views.serverSelecter import ServerSelecter
 from views.terminal import Terminal
-from ssh import SSH
+from models.server import Servers
+from sessions.ssh_client import SSH
+from sessions.sshSession import Sessions
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -58,18 +60,19 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     app.logger.info("Handle Message")
+    servers = Servers()
+    sessions = Sessions()
 
-    is_connected = True
+    user_id = event.source.user_id
+    session = sessions.get_by_user_id(user_id)
+
+    # is_connected = True
 
     # TODO: branch by sent command
     # whether connect to server or execute remote command
-    if is_connected:
-        ssh = SSH(
-            host='centos7',
-            port=22,
-            user='root',
-            password='password'
-        )
+    if session.get('is_connected'):
+        server = servers.get(session.get('server_id'))
+        ssh = SSH(server)
         std_out = ssh.exec_command(event.message.text)
         app.logger.info(f'STD_OUT : {std_out}')
         terminal = Terminal()
@@ -77,14 +80,8 @@ def handle_message(event):
         send_line_api(event, response_content)
 
 
-    server_list = [
-        {'name': 'ServerA', 'os_name': 'centos7'},
-        {'name': 'ServerB', 'os_name': 'ubuntu1804'},
-        {'name': 'ServerC', 'os_name': 'ubuntu1604'}
-    ]
-
     serverSelecter = ServerSelecter()
-    contents = serverSelecter.createCarousel(server_list)
+    contents = serverSelecter.createCarousel(servers.list())
     message = FlexSendMessage(alt_text="hello", contents=contents)
     # message = TextSendMessage(text=event.message.text)
 

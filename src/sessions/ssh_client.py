@@ -1,11 +1,11 @@
 from paramiko import SSHClient, AutoAddPolicy
 
 class SSH():
-    def __init__(self, host, port=22, user='root', password='password'):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.password = password
+    def __init__(self, server):
+        self.host = server.get('hostname')
+        self.port = 22
+        self.user = server.get('user')
+        self.password = server.get('password')
         self.ssh = SSHClient()
         self.ssh.set_missing_host_key_policy(AutoAddPolicy())
     

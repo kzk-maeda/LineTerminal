@@ -34,6 +34,8 @@ services:
       - ./persist/dynamodb:/home/dynamodblocal/data
     ports:
       - 50706:8000
+    networks: 
+      - local
   
   dynamodb-admin:
     container_name: dynamodb-admin
@@ -46,6 +48,8 @@ services:
       - 50727:8000
     depends_on:
       - dynamodb
+    networks:
+      - local
 
 
 networks:
