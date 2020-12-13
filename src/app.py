@@ -67,16 +67,15 @@ def handle_message(event):
     user_id = event.source.user_id
     session = sessions.get_by_user_id(user_id)
 
-    # TODO: branch by sent command
-    # whether connect to server or execute remote command
     if session.get('is_connected'):
         server = servers.get(session.get('server_id'))
         ssh = SSH(server)
-        res = ssh.exec_command(event.message.text)
+        res = ssh.exec_command(event.message.text, session)
         app.logger.info(f'Response : {res}')
         response_content = terminal.createTerminalResponse(
             server.get('name'), res.get('current_dir') , res.get('response')
         )
+        sessions.update(session, res)
         send_line_api(event, response_content)
 
     serverSelecter = ServerSelecter()

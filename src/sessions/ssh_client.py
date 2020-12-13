@@ -10,10 +10,12 @@ class SSH():
         self.ssh.set_missing_host_key_policy(AutoAddPolicy())
     
     
-    def exec_command(self, command, user='root', dir='/root'):
+    def exec_command(self, command, session):
+        user = session.get('current_os_user')
+        dir = session.get('current_dir')
+
         self._connect()
         one_line_cmd = f'cd {dir}; {command}; echo "<delimiter>"; whoami; echo "<delimiter>"; pwd'
-        # one_line_cmd = f'{command}'
 
         stdin, stdout, stderr = self.ssh.exec_command(one_line_cmd)
         str_stdout = ''.join(stdout.readlines())
@@ -24,8 +26,8 @@ class SSH():
             return str_stderr
         else:
             response = str_stdout.split('<delimiter>')[0]
-            current_user = str_stdout.split('<delimiter>')[1]
-            current_dir = str_stdout.split('<delimiter>')[2]
+            current_user = str_stdout.split('<delimiter>')[1].replace('\n' , '')
+            current_dir = str_stdout.split('<delimiter>')[2].replace('\n' , '')
             return_obj = {
                 "response": response,
                 "current_user": current_user,
