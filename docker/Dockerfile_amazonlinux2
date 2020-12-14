@@ -1,0 +1,13 @@
+FROM amazonlinux:2
+ENV LC_ALL=C
+
+RUN yum install -y vim && \
+    yum -y install openssh-server && \
+    yum -y install openssh-clients && \
+    yum -y install sudo && \
+    sed -i -e 's/# %wheel\tALL=(ALL)\tNOPASSWD: ALL/%wheel\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers && \
+    sed -i -e 's/%wheel\tALL=(ALL)\tALL/# %wheel\tALL=(ALL)\tALL/' /etc/sudoers && \
+    visudo -c && \
+    echo "root:password" | chpasswd
+
+CMD ["/usr/bin/ssh","-D", "FOREGROUND"]

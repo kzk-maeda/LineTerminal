@@ -18,7 +18,7 @@ from linebot.models import (
 from views.serverSelecter import ServerSelecter
 from views.terminal import Terminal
 from models.server import Servers
-from sessions.ssh_client import SSH
+from sessions.sshClient import SSH
 from sessions.sshSession import Sessions
 
 app = Flask(__name__)
@@ -67,7 +67,17 @@ def handle_message(event):
     user_id = event.source.user_id
     session = sessions.get_by_user_id(user_id)
 
-    if session.get('is_connected'):
+    if event.message.text == 'Connect to Server':
+        serverSelecter = ServerSelecter()
+        contents = serverSelecter.createCarousel(servers.list())
+        message = FlexSendMessage(alt_text="hello", contents=contents)
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            message
+        )
+
+    elif session.get('is_connected'):
         server = servers.get(session.get('server_id'))
         ssh = SSH(server)
         res = ssh.exec_command(event.message.text, session)
@@ -77,15 +87,6 @@ def handle_message(event):
         )
         sessions.update(session, res)
         send_line_api(event, response_content)
-
-    serverSelecter = ServerSelecter()
-    contents = serverSelecter.createCarousel(servers.list())
-    message = FlexSendMessage(alt_text="hello", contents=contents)
-
-    line_bot_api.reply_message(
-        event.reply_token,
-        message
-    )
 
 
 @handler.add(PostbackEvent)

@@ -3,7 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import uuid
 from datetime import datetime, timedelta
-from sessions.ssh_client import SSH
+from sessions.sshClient import SSH
 
 class Sessions():
     def __init__(self):
