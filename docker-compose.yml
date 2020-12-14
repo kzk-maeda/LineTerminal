@@ -1,0 +1,78 @@
+version: '3'
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_gateway
+    container_name: gateway
+    volumes:
+      - ./src/:/app
+    privileged: true
+    networks:
+      - local
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    command: /app/entrypoint.sh
+  
+  centos7:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_centos7
+    container_name: centos7
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+  
+  ubuntu1804:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_ubuntu1804
+    container_name: ubuntu1804
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+  
+  amazonlinux2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_amazonlinux2
+    container_name: amazonlinux2
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+
+
+  dynamodb:
+    container_name: dynamodb
+    image: amazon/dynamodb-local
+    command: -jar DynamoDBLocal.jar -dbPath /home/dynamodblocal/data
+    volumes:
+      - ./persist/dynamodb:/home/dynamodblocal/data
+    ports:
+      - 50706:8000
+    networks: 
+      - local
+  
+  dynamodb-admin:
+    container_name: dynamodb-admin
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_ddbadmin
+    command: dynamodb-admin -p 8000
+    env_file: .env
+    ports:
+      - 50727:8000
+    depends_on:
+      - dynamodb
+    networks:
+      - local
+
+
+networks:
+  local:
+    external: true
