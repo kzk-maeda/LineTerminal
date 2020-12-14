@@ -18,7 +18,7 @@ from linebot.models import (
 from views.serverSelecter import ServerSelecter
 from views.terminal import Terminal
 from models.server import Servers
-from sessions.ssh_client import SSH
+from sessions.sshClient import SSH
 from sessions.sshSession import Sessions
 
 app = Flask(__name__)
@@ -62,33 +62,31 @@ def handle_message(event):
     app.logger.info("Handle Message")
     servers = Servers()
     sessions = Sessions()
+    terminal = Terminal()
 
     user_id = event.source.user_id
     session = sessions.get_by_user_id(user_id)
 
-    # is_connected = True
+    if event.message.text == 'Connect to Server':
+        serverSelecter = ServerSelecter()
+        contents = serverSelecter.createCarousel(servers.list())
+        message = FlexSendMessage(alt_text="hello", contents=contents)
 
-    # TODO: branch by sent command
-    # whether connect to server or execute remote command
-    if session.get('is_connected'):
+        line_bot_api.reply_message(
+            event.reply_token,
+            message
+        )
+
+    elif session.get('is_connected'):
         server = servers.get(session.get('server_id'))
         ssh = SSH(server)
-        std_out = ssh.exec_command(event.message.text)
-        app.logger.info(f'STD_OUT : {std_out}')
-        terminal = Terminal()
-        response_content = terminal.createTerminalResponse('ServerA', '/usr/local', std_out)
+        res = ssh.exec_command(event.message.text, session)
+        app.logger.info(f'Response : {res}')
+        response_content = terminal.createTerminalResponse(
+            server.get('name'), res.get('current_dir') , res.get('response')
+        )
+        sessions.update(session, res)
         send_line_api(event, response_content)
-
-
-    serverSelecter = ServerSelecter()
-    contents = serverSelecter.createCarousel(servers.list())
-    message = FlexSendMessage(alt_text="hello", contents=contents)
-    # message = TextSendMessage(text=event.message.text)
-
-    line_bot_api.reply_message(
-        event.reply_token,
-        message
-    )
 
 
 @handler.add(PostbackEvent)

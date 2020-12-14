@@ -25,6 +25,27 @@ services:
     networks: 
       - local
     command: /sbin/init
+  
+  ubuntu1804:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_ubuntu1804
+    container_name: ubuntu1804
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+  
+  amazonlinux2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_amazonlinux2
+    container_name: amazonlinux2
+    privileged: true
+    networks: 
+      - local
+    command: /sbin/init
+
 
   dynamodb:
     container_name: dynamodb

@@ -3,7 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import uuid
 from datetime import datetime, timedelta
-from sessions.ssh_client import SSH
+from sessions.sshClient import SSH
 
 class Sessions():
     def __init__(self):
@@ -67,8 +67,20 @@ class Sessions():
 
         self.table.update_item(**option)
 
-    def delete(self):
-        pass
+    def update(self, session, response):
+        session_id = session.get('id')
+        user_id = session.get('user_id')
+        current_os_user = response.get('current_user')
+        current_dir = response.get('current_dir')
+
+        option = {
+            'Key' : {'id': session_id, 'user_id': user_id},
+            'UpdateExpression' : 'set #current_os_user = :current_os_user, #current_dir = :current_dir',
+            'ExpressionAttributeNames' : {"#current_os_user": "current_os_user", "#current_dir": "current_dir"},
+            'ExpressionAttributeValues' : {":current_os_user": current_os_user, ":current_dir": current_dir}
+        }
+
+        self.table.update_item(**option)
 
     def is_connected(self):
         pass

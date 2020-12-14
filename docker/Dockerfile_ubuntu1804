@@ -1,0 +1,13 @@
+FROM ubuntu:18.04
+ENV LC_ALL=C
+
+RUN apt-get update &&\
+    apt-get install -y openssh-server && \
+    apt-get install -y openssh-client && \
+    apt-get install -y sudo && \
+    sed -i -e 's/# %wheel\tALL=(ALL)\tNOPASSWD: ALL/%wheel\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers && \
+    sed -i -e 's/%wheel\tALL=(ALL)\tALL/# %wheel\tALL=(ALL)\tALL/' /etc/sudoers && \
+    visudo -c && \
+    echo "root:password" | chpasswd
+
+CMD ["/usr/bin/ssh","-D", "FOREGROUND"]
