@@ -1,5 +1,8 @@
 # LineTerminal
 
+# Sample
+<img src="./line_terminal_demo.gif">
+
 ## Local Settings
 
 ### create env file
